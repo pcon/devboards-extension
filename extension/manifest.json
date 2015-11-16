@@ -1,0 +1,57 @@
+{
+	"manifest_version": 2,
+	"name": "Devboards Active Users",
+	"version": "1.0",
+
+	"description": "An extension to show active users on a dev board post",
+	"icons": {
+		"16": "icon16.png",
+		"48": "icon48.png",
+		"128": "icon128.png"
+	},
+
+	"page_action": {},
+
+	"author": {
+		"name": "Patrick Connelly",
+		"email": "patrick@deadlypenguin.com",
+		"url": "http://deadlypenguin.com"
+	},
+	"background": {
+		"scripts": [
+			"jquery.min.js",
+			"firebase.js",
+			"lodash.min.js",
+			"config.js",
+			"background.js"
+		],
+		"persistent": true,
+		"matches": [
+			"*://developer.salesforce.com/*"
+		]
+	},
+	"permissions": [
+		"tabs",
+		"webNavigation",
+		"storage",
+		"*://developer.salesforce.com/*",
+		"*://*.firebase.io/*"
+	],
+	"content_security_policy": "script-src 'self' https://cdn.firebase.com https://*.firebaseio.com; object-src 'self'",
+	"content_scripts": [
+		{
+			"matches": [
+				"*://developer.salesforce.com/*"
+			],
+			"js": [
+				"jquery.min.js",
+				"bootstrap.min.js",
+				"firebase.js",
+				"toastr.min.js",
+				"lodash.min.js",
+				"config_client.js",
+				"content.js"
+			]
+		}
+	]
+}
