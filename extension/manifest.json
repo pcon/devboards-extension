@@ -53,5 +53,6 @@
 				"content.js"
 			]
 		}
-	]
+	],
+	"update_url": "http://pcon.github.io/devboards-monitor/updates.xml"
 }
