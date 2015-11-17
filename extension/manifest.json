@@ -1,7 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "Devboards Active Users",
-	"version": "1.0",
+	"short_name": "devboards",
+	"version": "1.1",
 
 	"description": "An extension to show active users on a dev board post",
 	"icons": {
