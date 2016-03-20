@@ -2,6 +2,7 @@
 /*global jQuery, config, Firebase, _, chrome, console */
 
 var firebase = new Firebase(config.FIREBASE_URL);
+var hostname = 'developer.salesforce.com';
 
 if (localStorage.tab_map === undefined) {
 	localStorage.tab_map = '{}';
@@ -38,6 +39,10 @@ var onRemoved = function (tabId, removeInfo) {
 	var tab_map = JSON.parse(localStorage.tab_map),
 		tab_info = _.get(tab_map, tabId.toString());
 
+	if (tab_info === undefined) {
+		return;
+	}
+
 	removeFromFirebase(tab_info);
 
 	tab_map = _.omit(tab_map, tabId.toString());
@@ -48,6 +53,8 @@ var onCompleted = function (details) {
 	'use strict';
 
 	var tab_info, message, tab_map;
+
+	onRemoved(details.tabId, null);
 
 	tab_info = {
 		tab_id: details.tabId,
@@ -74,13 +81,27 @@ var onCompleted = function (details) {
 	}
 };
 
+var onUpdated = function (tabId, change, tab) {
+	'use strict';
+
+	if (change.status === "complete" && tab.url !== undefined && tab.url !== null && _.includes(tab.url, hostname)) {
+		var details = {
+			tabId: tabId,
+			url: tab.url,
+			timeStamp: new Date().getTime()
+		};
+
+		onCompleted(details);
+	}
+};
+
 var listener_filter = {
 	url: [
 		{
-			hostSuffix: 'developer.salesforce.com'
+			hostSuffix: hostname
 		}
 	]
 };
 
-chrome.webNavigation.onCompleted.addListener(onCompleted, listener_filter);
+chrome.tabs.onUpdated.addListener(onUpdated);
 chrome.tabs.onRemoved.addListener(onRemoved);

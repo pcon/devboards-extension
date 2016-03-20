@@ -13,12 +13,17 @@ function getParameterByName(name, search) {
 function getParameterFromURL(name) {
 	'use strict';
 
-	return getParameterByName(name, location.search);
+	var param = getParameterByName(name, location.search);
+
+	if (param === null || param === '') {
+		param = getParameterByName(name, location.hash.replace(/^#!\//, '?'));
+	}
+
+	return param;
 }
 
 var current_users = {},
-	firebase = new Firebase(config.FIREBASE_URL),
-	post_id = getParameterFromURL('id');
+	firebase = new Firebase(config.FIREBASE_URL);
 
 function loadStyles() {
 	'use strict';
@@ -64,7 +69,8 @@ function removeUser(user_info) {
 function watchFirebase() {
 	'use strict';
 
-	var baseref = firebase.child(post_id);
+	var post_id = getParameterFromURL('id'),
+		baseref = firebase.child(post_id);
 
 	baseref.on('child_added', function (childSnapshot, prevChildKey) {
 		addUser(childSnapshot.val());
@@ -89,6 +95,8 @@ var onCompleted = function (request, sender, sendResponse) {
 		user_name: user_name
 	};
 
+	loadStyles();
+	watchFirebase();
 	sendResponse(message);
 };
 
@@ -103,10 +111,5 @@ var messageHandler = function (request, sender, sendResponse) {
 		handler_map[request.action](request, sender, sendResponse);
 	}
 };
-
-if (!_.isEmpty(post_id)) {
-	loadStyles();
-	watchFirebase();
-}
 
 chrome.runtime.onMessage.addListener(messageHandler);
